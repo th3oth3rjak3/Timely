@@ -1,0 +1,85 @@
+﻿@page "/"
+
+<MudStack Class="page-stack">
+    <MudStack Row="true" Justify="Justify.Center">
+        <MudItem xs="12" sm="10" md="8" lg="6">
+            <MudCard Elevation="5">
+                <MudCardContent>
+                    <MudText Align="Align.Center" Typo="Typo.h2">@TimeRemainingDisplay</MudText>
+                </MudCardContent>
+                <MudCardActions >
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudStack Row="true" Spacing="4" Justify="Justify.Center">
+                                @if (StateFromService.IsPaused)
+                                {
+                                    <MudButton 
+                                        FullWidth="false" 
+                                        StartIcon="@Icons.Material.Filled.Replay"
+                                        Size="Size.Large" 
+                                        OnClick="ResetTimer" 
+                                        Variant="Variant.Filled">
+                                        <MudText>Reset</MudText>
+                                    </MudButton>
+
+                                    <MudButton 
+                                        FullWidth="false" 
+                                        StartIcon="@Icons.Material.Filled.PlayArrow"
+                                        Size="Size.Large"
+                                        OnClick=ResumeTimer 
+                                        Variant="Variant.Filled">
+                                        <MudText>Resume</MudText>
+                                    </MudButton>
+                                }
+                                else
+                                {
+                                    <MudButton 
+                                        FullWidth="false" 
+                                        StartIcon="@Icons.Material.Filled.PlayArrow"
+                                        Size="Size.Large"
+                                        OnClick=StartTimer 
+                                        Variant="Variant.Filled" 
+                                        Disabled="StateFromService.IsRunning">
+                                        <MudText>Start</MudText>
+                                    </MudButton>
+                                    <MudButton 
+                                        FullWidth="false" 
+                                        StartIcon="@Icons.Material.Filled.Pause"
+                                        Size="Size.Large"
+                                        OnClick="PauseTimer" 
+                                        Variant="Variant.Filled" 
+                                        Disabled="!StateFromService.IsRunning">
+                                        <MudText>Pause</MudText>
+                                    </MudButton>
+                                }
+                            </MudStack>
+                        </MudItem>
+                        <MudFlexBreak />
+                        <MudGrid Class="my-5">
+                            <MudSpacer />
+                            <MudItem xs="8">
+                                <MudTimePicker 
+                                    @ref="timePicker"
+                                    Label="Duration"
+                                    OpenTo="OpenTo.Minutes"
+                                    Color="Color.Tertiary"
+                                    TimeFormat="@TimerDurationDisplay"
+                                    MinuteSelectionStep="1"
+                                    PickerVariant="PickerVariant.Dialog"
+                                    AutoClose="false"
+                                    @bind-Time="TimerDuration">
+                                    <PickerActions>
+                                        <MudButton Class="mr-auto align-self-start" OnClick="@(() => timePicker.ClearAsync())">Clear</MudButton>
+                                        <MudButton OnClick="@(() => timePicker.CloseAsync(false))">Cancel</MudButton>
+                                        <MudButton Color="Color.Primary" OnClick="@(() => SetTimerDuration())">Ok</MudButton>
+                                    </PickerActions>
+                                </MudTimePicker>
+                            </MudItem>
+                            <MudSpacer />
+                        </MudGrid>
+                    </MudGrid>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudStack>
+</MudStack>

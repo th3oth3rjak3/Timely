@@ -1,0 +1,25 @@
+﻿<MudTooltip Delay="@Delay" Text="@Text">
+    @ChildContent
+</MudTooltip>
+
+@code {
+    /// <summary>
+    /// Elements that, when hovered, activate the tooltip.
+    /// </summary>
+    [Parameter]
+    [EditorRequired]
+    public required RenderFragment ChildContent { get; set; }
+
+    /// <summary>
+    /// The tooltip text to display on hover.
+    /// </summary>
+    [Parameter]
+    [EditorRequired]
+    public required string Text { get; set; }
+
+    /// <summary>
+    /// The delay in milliseconds.
+    /// </summary>
+    [Parameter]
+    public double Delay { get; set; } = 800;
+}

@@ -1,0 +1,63 @@
+﻿@page "/todo-items"
+
+<MudStack Class="page-stack" Spacing="10">     
+    <MudStack Row="true" Justify="Justify.Center">
+        <MudItem xs="12" md="10" lg="8" xl="6">
+            <MudDataGrid 
+                Items="todoItems" 
+                Filterable="true" 
+                SortMode="@SortMode.Single" 
+                Groupable="false" 
+                Dense="true" 
+                FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
+                FilterMode="DataGridFilterMode.Simple"
+                Elevation="5">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Tasks</MudText>
+                    <MudSpacer />
+                    <MyTooltip Text="Add New Task">
+                        <MudIconButton 
+                            Icon="@Icons.Material.Filled.AddTask"
+                            OnClick="AddNewTodoItem"
+                            Color="Color.Success"
+                        />
+                    </MyTooltip>
+                    <MyTooltip Text="Delete All Completed Tasks">
+                        <MudIconButton 
+                            Icon="@Icons.Material.Filled.RemoveDone"           
+                            Color="Color.Error"
+                            OnClick="ClearAllCompletedItems" />
+                    </MyTooltip>
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.Description" />
+                    <PropertyColumn Property="x => x.CompleteDate" Title="Complete Date"/>
+                    <TemplateColumn Filterable="false" Title="Complete">
+                        <CellTemplate>
+                            <MyTooltip Text="Mark Task Complete">
+                                <MudIconButton 
+                                    Color="Color.Success" 
+                                    Icon="@Icons.Material.Filled.Done" 
+                                    Disabled="@(context.Item.CompleteDate is not null)"
+                                    OnClick=@(() => MarkTodoItemCompleted(context.Item))/>
+                            </MyTooltip>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Filterable="false" Title="Delete">
+                        <CellTemplate>
+                            <MyTooltip Text="Delete Task">
+                                <MudIconButton 
+                                    Color="Color.Error" 
+                                    Icon="@Icons.Material.Filled.Delete" 
+                                    OnClick=@(() => DeleteTodoItem(context.Item)) />
+                            </MyTooltip>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager T="TodoItem" />
+                </PagerContent>
+            </MudDataGrid>
+        </MudItem>
+    </MudStack>
+</MudStack>

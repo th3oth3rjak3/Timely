@@ -1,0 +1,7 @@
+﻿.page-stack {
+    min-width: 300px;
+}
+
+.dialog-blur {
+    backdrop-filter: blur(10px);
+}
