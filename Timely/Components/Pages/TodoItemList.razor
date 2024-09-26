@@ -4,6 +4,7 @@
     <MudStack Row="true" Justify="Justify.Center">
         <MudItem xs="12" md="10" lg="8" xl="6">
             <MudDataGrid 
+                T="TodoItem"
                 Items="todoItems" 
                 Filterable="true" 
                 SortMode="@SortMode.Single" 
@@ -11,28 +12,40 @@
                 Dense="true" 
                 FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive"
                 FilterMode="DataGridFilterMode.Simple"
-                Elevation="5">
+                Elevation="5"
+                ReadOnly="true"
+                Hover="true"
+                >
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Tasks</MudText>
                     <MudSpacer />
                     <MyTooltip Text="Add New Task">
                         <MudIconButton 
-                            Icon="@Icons.Material.Filled.AddTask"
+                            Icon="@Icons.Material.Filled.AddCircle"
                             OnClick="AddNewTodoItem"
                             Color="Color.Success"
                         />
                     </MyTooltip>
                     <MyTooltip Text="Delete All Completed Tasks">
                         <MudIconButton 
-                            Icon="@Icons.Material.Filled.RemoveDone"           
+                            Icon="@Icons.Material.Filled.DeleteSweep"           
                             Color="Color.Error"
                             OnClick="ClearAllCompletedItems" />
                     </MyTooltip>
                 </ToolBarContent>
                 <Columns>
-                    <PropertyColumn Property="x => x.Description" />
-                    <PropertyColumn Property="x => x.CompleteDate" Title="Complete Date"/>
-                    <TemplateColumn Filterable="false" Title="Complete">
+                    <PropertyColumn Property="x => x.Description" HeaderStyle="min-width: 200px"/>
+                    <PropertyColumn Property="x => x.CompleteDate" Title="Completed" HeaderStyle="max-width: 80px"/>
+                    <TemplateColumn Filterable="false" Title="Edit" Editable="false" HeaderStyle="width: 80px">
+                        <CellTemplate>
+                            <MyTooltip Text="Edit Task">
+                                <MudIconButton 
+                                    Icon="@Icons.Material.Filled.Edit"
+                                    OnClick=@(() => EditTodoItem(context.Item)) />
+                            </MyTooltip>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Filterable="false" Title="Done" Editable="false" HeaderStyle="width: 80px">
                         <CellTemplate>
                             <MyTooltip Text="Mark Task Complete">
                                 <MudIconButton 
@@ -43,7 +56,7 @@
                             </MyTooltip>
                         </CellTemplate>
                     </TemplateColumn>
-                    <TemplateColumn Filterable="false" Title="Delete">
+                    <TemplateColumn Filterable="false" Title="Delete" Editable="false" HeaderStyle="width: 80px">
                         <CellTemplate>
                             <MyTooltip Text="Delete Task">
                                 <MudIconButton 

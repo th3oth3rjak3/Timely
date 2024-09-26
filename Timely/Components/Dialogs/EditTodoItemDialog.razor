@@ -1,0 +1,62 @@
+﻿<MudForm @ref="Form" Model="@EditModel" Validation="validator.ValidateModel">
+    <MudDialog ContentStyle="min-width: 400px;">
+        <DialogContent>
+            <MudTextField @bind-Value="EditModel.Description" Label="Description" For="@(() => EditModel.Description)" />
+        </DialogContent>
+        <DialogActions>
+            <MudStack Row="true" Spacing="4">
+                <MudButton ButtonType="ButtonType.Button" OnClick="() => MudDialog.Cancel()">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Color="Color.Primary" Variant="Variant.Filled" OnClick="EditTodoItem">Save</MudButton>
+            </MudStack>
+        </DialogActions>
+    </MudDialog>
+</MudForm>
+
+@code {
+    /// <summary>
+    /// The mud dialog instance used to cancel and submit the form.
+    /// </summary>
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    /// <summary>
+    /// The todo item to edit.
+    /// </summary>
+    [Parameter]
+    [EditorRequired]
+    public required TodoItem TodoItem { get; set; }
+
+    private MudForm Form { get; set; } = default!;
+
+    /// <summary>
+    /// The validator for this form.
+    /// </summary>
+    private TodoItemValidator validator = new();
+
+    /// <summary>
+    /// A model to hold the temporary values while editing an item.
+    /// </summary>
+    private EditTodoItem EditModel = new();
+
+    /// <summary>
+    /// Initialize the EditModel data.
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        EditModel = new EditTodoItem { Description = TodoItem.Description };
+    }
+
+    /// <summary>
+    /// Validate and return the edited todo item.
+    /// </summary>
+    private async Task EditTodoItem()
+    {
+        await Form.Validate();
+
+        if (!Form.IsValid || EditModel.Description is null) return;
+
+        TodoItem.Description = EditModel.Description;
+
+        MudDialog.Close(DialogResult.Ok(TodoItem));
+    }
+}

@@ -1,7 +1,5 @@
 namespace Timely.Components.Pages;
 
-using System.ComponentModel.DataAnnotations;
-
 using Functional;
 
 using Microsoft.AspNetCore.Components;
@@ -79,7 +77,7 @@ public partial class TodoItemList
         var options = new DialogOptions() { BackgroundClass = "dialog-blur", CloseButton = true };
         var dialogParams = new DialogParameters<ConfirmationDialog>
         {
-            { x => x.ContentText, $"Mark task '{item.Description}' complete?" },
+            { x => x.ContentText, $"Complete task '{item.Description}'?" },
             { x => x.ConfirmButtonText, "Confirm" },
             { x => x.ConfirmButtonColor, Color.Primary },
         };
@@ -101,7 +99,7 @@ public partial class TodoItemList
     /// Get all todo items to display to the user.
     /// </summary>
     private void GetTodoItems() =>
-        todoItems = TodoItemRepository.TodoItems(ItemType).OrderBy(x => x.Description).ToList();
+        todoItems = TodoItemRepository.TodoItems(ItemType).OrderBy(x => x.Id).ToList();
 
     /// <summary>
     /// Delete the todo item after showing the user a confirmation dialog.
@@ -131,6 +129,10 @@ public partial class TodoItemList
             .EffectAsync(() => InvokeAsync(StateHasChanged));
 
     }
+
+    /// <summary>
+    /// Delete all completed items from the database.
+    /// </summary>
     private async Task ClearAllCompletedItems()
     {
         var options = new DialogOptions() { BackgroundClass = "dialog-blur", CloseButton = true };
@@ -159,13 +161,28 @@ public partial class TodoItemList
             .Effect(GetTodoItems)
             .Async()
             .EffectAsync(() => InvokeAsync(StateHasChanged));
-
     }
 
-    private class NewTodoItemForm
+    /// <summary>
+    /// Edit an existing todo item.
+    /// </summary>
+    /// <param name="item"></param>
+    private async Task EditTodoItem(TodoItem item)
     {
-        [Required(ErrorMessage = "Description is required")]
-        [StringLength(100, ErrorMessage = "Maximum length is 100")]
-        public string? Description { get; set; } = null;
+        var options = new DialogOptions { BackgroundClass = "dialog-blur", BackdropClick = false, FullWidth = true };
+        var dialogParams = new DialogParameters<EditTodoItemDialog> { { x => x.TodoItem, item } };
+        var dialog = await DialogService.ShowAsync<EditTodoItemDialog>("Edit Task", dialogParams, options);
+        var result = await dialog.Result;
+
+        if (result?.Data is not TodoItem data) return;
+
+        await TodoItemRepository
+            .UpdateTodoItem(data)
+            .Effect(
+                () => SnackBar.Add($"Updated task '{data.Description}'", Severity.Success),
+                err => SnackBar.Add($"Error saving item: {err}", Severity.Error))
+            .Effect(GetTodoItems)
+            .Async()
+            .EffectAsync(() => InvokeAsync(StateHasChanged));
     }
 }

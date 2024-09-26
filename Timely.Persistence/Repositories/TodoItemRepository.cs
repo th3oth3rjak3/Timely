@@ -7,6 +7,9 @@ using Timely.Domain.Features.TodoItems;
 
 using static Functional.Prelude;
 
+/// <summary>
+/// A repository to handle data persistence for Todo Items.
+/// </summary>
 public class TodoItemRepository : ITodoItemRepository
 {
     private readonly TimelyContext _context;
@@ -84,6 +87,16 @@ public class TodoItemRepository : ITodoItemRepository
         {
             _context.TodoItems.Remove(todoItem);
             _context.SaveChanges();
+        })
+        .MapError(exn => exn.Message);
+
+    /// <inheritdoc />
+    public Result<TodoItem, string> UpdateTodoItem(TodoItem todoItem) =>
+        Try(() =>
+        {
+            _context.TodoItems.Update(todoItem);
+            _context.SaveChanges();
+            return todoItem;
         })
         .MapError(exn => exn.Message);
 }

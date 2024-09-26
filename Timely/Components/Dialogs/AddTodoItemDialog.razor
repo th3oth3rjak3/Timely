@@ -1,40 +1,53 @@
-﻿<EditForm Model="@NewItemForm" OnValidSubmit="AddNewTodoItem">
+﻿<MudForm @ref="Form" Model="@NewItemForm" Validation="validator.ValidateModel">
     <MudDialog ContentStyle="min-width: 400px;">
         <DialogContent>
-            <DataAnnotationsValidator />
             <MudTextField @bind-Value="NewItemForm.Description" Label="Description" For="@(() => NewItemForm.Description)" />
         </DialogContent>
         <DialogActions>
             <MudStack Row="true" Spacing="4">
                 <MudButton ButtonType="ButtonType.Button" OnClick="() => MudDialog.Cancel()">Cancel</MudButton>
-                <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary" Variant="Variant.Filled">Add</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Color="Color.Primary" Variant="Variant.Filled" OnClick="AddNewTodoItem">Add</MudButton>
             </MudStack>
         </DialogActions>
     </MudDialog>
-</EditForm>
+</MudForm>
 
 @code {
 
+    /// <summary>
+    /// The mud dialog instance used to cancel and submit the form.
+    /// </summary>
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; } = default!;
 
     /// <summary>
     /// The form to contain the new todo item after successful input.
     /// </summary>
-    private NewTodoItemForm NewItemForm { get; set; } = new();
+    private NewTodoItem NewItemForm { get; set; } = new();
 
-    private class NewTodoItemForm
-    {
-        [Required(ErrorMessage = "Description is required")]
-        [StringLength(100, ErrorMessage = "Maximum length is 100")]
-        public string? Description { get; set; } = null;
-    }
+    /// <summary>
+    /// The form reference to use validation.
+    /// </summary>
+    private MudForm Form { get; set; } = default!;
 
-    private void AddNewTodoItem()
+    /// <summary>
+    /// Validate the todo item fields and submit the new item if valid.
+    /// </summary>
+    /// <returns></returns>
+    private async Task AddNewTodoItem()
     {
+        await Form.Validate();
+
+        if (!Form.IsValid) return;
+
         if (NewItemForm.Description is null) return;
 
         var newItem = new TodoItem(NewItemForm.Description);
         MudDialog.Close(DialogResult.Ok(newItem));
     }
+
+    /// <summary>
+    /// The validator for this form.
+    /// </summary>
+    private NewTodoItemValidator validator = new NewTodoItemValidator();
 }

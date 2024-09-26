@@ -38,4 +38,11 @@ public interface ITodoItemRepository
     /// </summary>
     /// <param name="todoItem">The todo item to remove.</param>
     public Result<Unit, string> DeleteTodoItem(TodoItem todoItem);
+
+    /// <summary>
+    /// Update a todo item in the database.
+    /// </summary>
+    /// <param name="todoItem">The contents of the new todo item to be updated.</param>
+    /// <returns>The updated todo item or an error message.</returns>
+    public Result<TodoItem, string> UpdateTodoItem(TodoItem todoItem);
 }
